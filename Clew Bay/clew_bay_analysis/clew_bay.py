@@ -1,40 +1,98 @@
 
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-from scipy.stats import f_oneway
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+
 
 
 # castaways data==========================================================================
-castaways_file = r"file_path" # download castaways_compiled_data.csv file 
-ca_data = pd.read_csv(castaways_file)
 
-ca_df = pd.DataFrame(ca_data)
+# Step 1: Load the CSV file into a DataFrame
+file_path =  # Replace with your CSV file path
+data = pd.read_csv(file_path)
 
-# Extract data for plotting
-lat = ca_df['latitude']
-lon = ca_df['longitude']
-depth = ca_df['depth']
-temp = ca_df['temperature']
 
-# 3D scatter plot
-fig = plt.figure(figsize=(11, 6))
-ax = fig.add_subplot(111, projection='3d')
-sc = ax.scatter(lat, lon, depth, c=temp, cmap='viridis')
-cbar = plt.colorbar(sc)
-cbar.set_label('Temperature (°C)')
-ax.set_xlabel('Latitude')
-ax.set_ylabel('Longitude')
-ax.set_zlabel('Depth (m)')
-ax.invert_zaxis()
+# Step 2: Plot the data
+plt.figure(figsize=(8, 10))
+
+
+# Loop over each unique location and plot its data
+for location in data['location'].unique():
+    subset = data[data['location'] == location]
+    plt.plot(subset['temperature'], subset['depth'], label=f'Location {location}', alpha=0.7, linewidth=2.5)
+
+# Step 3: Invert y-axis to have depth increasing downwards (optional, based on common practice in depth plots)
+plt.gca().invert_yaxis()
+
+# Step 4: Labeling the plot
+plt.xlabel('Temperature (°C)', fontsize=15)
+plt.ylabel('Depth (m)', fontsize=15)
+plt.xticks(fontsize=15)  
+plt.yticks(fontsize=15)
+plt.legend(loc='upper right', bbox_to_anchor=(1.21, 1), borderaxespad=0)
+plt.grid(True)
+
+# Step 5: Show the plot
 plt.show()
 
 
-# exo sonde- map==========================================================================
+
+
+# Salinity
+# Loop over each unique location and plot its data
+for location in data['location'].unique():
+    subset = data[data['location'] == location]
+    plt.plot(subset['salinity'], subset['depth'], label=f'Location {location}', alpha=0.7, linewidth=2.5)
+
+# Step 3: Invert y-axis to have depth increasing downwards (optional, based on common practice in depth plots)
+plt.gca().invert_yaxis()
+
+# Step 4: Labeling the plot
+plt.xlabel('Salinity (psu)', fontsize=15)
+plt.ylabel('Depth (m)', fontsize=15)
+plt.xticks(fontsize=15)  
+plt.yticks(fontsize=15)
+plt.legend(loc='upper right', bbox_to_anchor=(1.21, 1), borderaxespad=0)
+plt.grid(True)
+
+# Step 5: Show the plot
+plt.show()
+
+
+
+
+# castaway by month
+# Filter the data to include only rows where the month is March (i.e., month == 3)
+season_data = data[data['month'].isin([2,3])]
+
+# Step 3: Plot the data
+plt.figure(figsize=(8, 10))
+
+# Loop over each unique location and plot its data for March only
+for location in season_data['location'].unique():
+    subset = season_data[season_data['location'] == location]
+    plt.plot(subset['salinity'], subset['depth'], label=f'{location}', alpha=0.7, linewidth=2.5)
+
+# Step 4: Invert y-axis to have depth increasing downwards (optional, based on common practice in depth plots)
+plt.gca().invert_yaxis()
+
+# Step 5: Labeling the plot
+plt.xlabel('Salinity (psu)', fontsize=15)
+plt.ylabel('Depth (m)', fontsize=15)
+plt.xticks(fontsize=15)  
+plt.yticks(fontsize=15)
+plt.legend(title="Locations", loc='upper right', bbox_to_anchor=(1.15, 1), borderaxespad=0)
+plt.grid(True)
+
+# Step 6: Show the plot
+plt.show()
+
+
+
+
+
+# exo sonde- map===============================================
+
 exo_sonde_file = r"file_path" # download exo_sonde.csv file 
 es_data = pd.read_csv(exo_sonde_file)
 
@@ -61,7 +119,7 @@ plt.show()
 
 # exo sonde- boxplot==========================================================================
 locations = ['Location 1', 'Location 2', 'Location 3', 'Location 4', 
-             'Location 5', 'Location 6', 'Location 7', 'Location 8']
+              'Location 5', 'Location 6', 'Location 7', 'Location 8']
 temperature_data = {
     'Location 1': es_data['temperature'][0:28],
     'Location 2': es_data['temperature'][28:40],
@@ -279,6 +337,7 @@ if p_value < 0.05:
 else:
     print("There is no significant difference between the mean dissolved oxygens of the locations.")
 
+#=============================================================================
 
 
 
